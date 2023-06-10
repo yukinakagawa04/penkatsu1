@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Post;
 use Illuminate\Support\Facades\Validator;
+use Auth;
+use App\Models\User;
+
 
 class PostController extends Controller
 {
@@ -37,49 +40,56 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+     
     public function store(Request $request)
     {
-        //送る内容を再度定義する
-        $post = new Post();
-            // title
-            $post -> title = request() -> title;
-            // image
-            if(request('image')){
-                $original = request() -> file("image") -> getClientoriginalName();
-                $name = date("Ymd_His")."_".$original; 
-                request() -> file("image") -> move("storage/posts/images", $name);
-            $post -> image =  $name;
-            }  
-            // description
-            $post -> description = request() -> description;
-            // prefecture
-            $post -> prefecture = request() -> prefecture;
-            // aquariumname
-            $post -> aquariumname = request() -> aquariumname;
-            
-            $post -> save();
-        
         // バリデーション
         $validator = Validator::make($request->all(), [
-            'title' => 'required | max:191',
+            'title' => 'required|max:191',
             'description' => 'required',
             'image' => 'nullable',
             'prefecture' => 'required',
             'aquariumname' => 'required',
         ]);
+        
         // バリデーション:エラー
         if ($validator->fails()) {
-                return redirect()
+            return redirect()
                 ->route('post.create')
                 ->withInput()
                 ->withErrors($validator);
-          }
-          
-        // 戻り値は挿入されたレコードの情報
-        $result = Post::create($request->all());
-        // ルーティング「tweet.index」にリクエスト送信（一覧ページに移動）
+        }
+        
+        // 編集フォームから送信されてきたデータとユーザIDをマージ
+        $data = $request->merge(['user_id' => Auth::user()->id])->all();
+        
+        // 送信内容を再度定義する
+        $post = new Post();
+        // title
+        $post->title = $data['title'];
+        // image
+        if ($request->hasFile('image')) {
+            $original = $request->file('image')->getClientOriginalName();
+            $name = date("Ymd_His") . "_" . $original;
+            $request->file('image')->move("storage/posts/images", $name);
+            $post->image = $name;
+        }
+        // description
+        $post->description = $data['description'];
+        // prefecture
+        $post->prefecture = $data['prefecture'];
+        // aquariumname
+        $post->aquariumname = $data['aquariumname'];
+        // user_id
+        $post->user_id = $data['user_id'];
+    
+        $post->save();
+        
+        // ルーティング「post.index」にリダイレクト（一覧ページに移動）
         return redirect()->route('post.index');
     }
+
+
 
     /**
      * Display the specified resource.
@@ -87,9 +97,10 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+  public function show($id)
     {
-        //
+        $post = Post::findOrFail($id);
+        return view('post.show', compact('post'));
     }
 
     /**
@@ -100,7 +111,8 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::find($id);
+         return response()->view('post.edit', compact('post'));
     }
 
     /**
@@ -112,7 +124,29 @@ class PostController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+      //バリデーション
+      $validator = Validator::make($request->all(), [
+        'title' => 'required | max:191',
+        'description' => 'required',
+        'aquariumname' => 'required',
+      ]);
+      //バリデーション:エラー
+      if ($validator->fails()) {
+        return redirect()
+          ->route('post.edit', $id)
+          ->withInput()
+          ->withErrors($validator);
+      }
+    
+      
+      
+        // データ更新処理
+        Post::find($id)->update($request->all());
+        
+        // 更新後のデータを取得
+        $post = Post::find($id);
+        
+        return redirect()->route('post.index', compact('post'));
     }
 
     /**
@@ -123,6 +157,23 @@ class PostController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::findOrFail($id); // 対象の投稿を取得
+        $post->delete(); // 論理削除を行う
+        return redirect()->route('post.index');
     }
+    
+    public function mydata()
+    {
+        // Userモデルに定義したリレーションを使用してデータを取得する．
+        $posts = User::query()
+        ->find(Auth::user()->id)
+        ->userPosts()
+        ->orderBy('created_at', 'desc')
+        ->paginate(5);
+         
+        return view('post.index', compact('posts'));
+        
+        
+    }
+    
 }
