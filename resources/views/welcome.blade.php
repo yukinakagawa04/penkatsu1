@@ -7,6 +7,7 @@
 
   <!-- Fonts -->
   <link href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="{{ asset('images/image2.png') }}">
 
   <!-- Styles -->
   <style>
