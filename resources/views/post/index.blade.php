@@ -41,10 +41,15 @@
                       </a>
                     </div>
                     <div class="md:w-1/2 mt-4 md:mt-0">
-                      <a href="{{ route('post.show',$post->id) }}">
-                        <img src="{{ asset('storage/posts/images/' . $post->image) }}" class="md:ml-4 max-w-400px h-auto">
-                      </a>
+                      <div class="flex justify-center items-center overflow-hidden mx-auto rounded-lg">
+                        <a href="{{ route('post.show', $post->id) }}">
+                          <div style="width: 300px; height: 300px;">
+                            <img src="{{ asset('storage/posts/images/' . $post->image) }}" class="object-cover object-top w-full h-full rounded-lg">
+                          </div>
+                        </a>
+                      </div>
                     </div>
+                    
                   </div>
                   <div class="flex mt-4">
                     @if ($post->user_id === Auth::user()->id)
