@@ -47,6 +47,7 @@
                     </div>
                   </div>
                   <div class="flex mt-4">
+                    @if ($post->user_id === Auth::user()->id)
                     <!-- 更新ボタン -->
                     <form action="{{ route('post.edit',$post->id) }}" method="GET" class="text-left">
                       @csrf
@@ -68,6 +69,7 @@
                         </svg>
                       </x-primary-button>
                     </form>
+                    @endif
                   </div>
                 </td>
               </tr>
