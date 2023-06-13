@@ -93,7 +93,7 @@
     <div class="menu">
       @if (Route::has('login'))
         @auth
-          <a href="{{ url('/home') }}">ホーム</a>
+          <a href="{{ url('/dashboard') }}">ホーム</a>
         @else
           <a href="{{ route('login') }}">ログイン</a>
           @if (Route::has('register'))
