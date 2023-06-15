@@ -78,7 +78,7 @@
           
           <div id="keyword-search" class="hidden mt-4">
             <x-input-label for="keyword" />
-            <x-text-input id="keyword" placeholder="例：ペンギン、◯◯水族館、個体名" class="block mt-1 w-full" type="text" name="keyword" :value="old('keyword')" autofocus />
+            <x-text-input id="keyword" placeholder="例：ペンギン、個体名" class="block mt-1 w-full" type="text" name="keyword" :value="old('keyword')" autofocus />
           </div>
         </div>
         

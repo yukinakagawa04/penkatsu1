@@ -33,22 +33,26 @@
                 <td class="py-4 px-6 border-b border-gray-light">
                   <div class="flex flex-col md:flex-row">
                     <div class="md:w-1/2">
-                      <a href="{{ route('post.show',$post->id) }}">
-                        <p class="text-left text-gray-800 dark:text-gray-dark">{{$post->user->name}}</p>
-                        <h3 class="text-left font-bold text-lg text-gray-dark">{{$post->title}}</h3>
-                        <p class="text-left text-gray-dark">{{$post->description}}</p>
-                        <p class="hidden">{{$post->prefecture}}</p>
+                      <a href="{{ route('post.show', $post->id) }}" class="flex flex-col justify-between h-full">
+                        <div>
+                          <p class="text-left text-gray-800 dark:text-gray-dark">{{ $post->user->name }}</p>
+                          <h3 class="text-left font-bold text-lg text-gray-dark">{{ $post->title }}  @ {{ $post->aquariumname }} </h3>
+                          <p class="text-left text-gray-dark">{{ $post->description }}</p>
+                          <p class="hidden">{{ $post->prefecture }}</p>
+                        </div>
+                        <div class="mt-4 md:mt-0">
+                          <div class="flex justify-center items-center overflow-hidden mx-auto w-64 h-64 rounded-lg">
+                            <a href="{{ route('post.show', $post->id) }}">
+                              <div style="width: 300px; height: 300px;">
+                                <img src="{{ asset('storage/posts/images/' . $post->image) }}" class="object-cover w-full h-full rounded-lg">
+                              </div>
+                            </a>
+                          </div>
+                        </div>
                       </a>
                     </div>
-                    <div class="md:w-1/2 mt-4 md:mt-0">
-                      <div class="flex justify-center items-center overflow-hidden mx-auto rounded-lg">
-                        <a href="{{ route('post.show', $post->id) }}">
-                          <div style="width: 300px; height: 300px;">
-                            <img src="{{ asset('storage/posts/images/' . $post->image) }}" class="object-cover object-top w-full h-full rounded-lg">
-                          </div>
-                        </a>
-                      </div>
-                    </div>
+                  </div>
+
                     
                   </div>
                   <div class="flex mt-4">

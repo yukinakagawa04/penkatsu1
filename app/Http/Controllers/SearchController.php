@@ -23,10 +23,11 @@ class SearchController extends Controller
     {
         $keyword = $request->input('keyword');
         $prefecture = $request->input('prefecture');
+        $aquariumname = $request->input('aquariumname');
         
-        if (empty($keyword) && empty($prefecture)) {
+        if (empty($keyword) && empty($prefecture) && empty($aquariumname)) {
             // エラーメッセージを表示する
-            return redirect()->back()->with('error', 'キーワードまたは都道府県を入力してください。');
+            return redirect()->back()->with('error', 'キーワード、都道府県を入力してください。');
         }
         
         $posts = Post::query();
@@ -34,6 +35,8 @@ class SearchController extends Controller
         if (!empty($keyword)) {
             $users  = User::where('name', 'like', "%{$keyword}%")->pluck('id')->all();
             $posts = $posts->where('title', 'like', "%{$keyword}%")
+                ->orWhereIn('user_id', $users);
+            $posts = $posts->where('aquariumname', 'like', "%{$keyword}%")
                 ->orWhereIn('user_id', $users);
         }
         
@@ -45,6 +48,7 @@ class SearchController extends Controller
         
         return response()->view('post.index', compact('posts'));
     }
+
 
     
     public function create()
